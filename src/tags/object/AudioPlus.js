@@ -9,6 +9,7 @@ import ProcessAttrsMixin from "../../mixins/ProcessAttrs";
 import Registry from "../../core/Registry";
 import Utils from "../../utils";
 import Waveform from "../../components/Waveform/Waveform";
+import Spectrogram from "../../components/Spectrogram/Spectrogram";
 import { AudioRegionModel } from "../../regions/AudioRegion";
 import { guidGenerator, restoreNewsnapshot } from "../../core/Helpers";
 import { ErrorMessage } from "../../components/ErrorMessage/ErrorMessage";
@@ -249,7 +250,7 @@ const HtxAudioView = ({ store, item }) => {
         {item.errors?.map(error => (
           <ErrorMessage error={error} />
         ))}
-        <Waveform
+        <Spectrogram
           dataField={item.value}
           src={item._value}
           selectRegion={item.selectRegion}
