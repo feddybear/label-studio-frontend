@@ -15,8 +15,8 @@ import { SoundOutlined } from "@ant-design/icons";
 import InfoModal from "../Infomodal/Infomodal";
 import messages from "../../utils/messages";
 import { Hotkey } from "../../core/Hotkey";
-import MultiCanvas from "wavesurfer.js/src/drawer.multicanvas.js";
-import Canvas from "wavesurfer.js/src/drawer.js";
+// import MultiCanvas from "wavesurfer.js/src/drawer.multicanvas.js";
+// import Canvas from "wavesurfer.js/src/drawer.js";
 import MySpectrogramRenderer from "./drawer.myspectrogramrenderer.js";
 
 /**
@@ -235,6 +235,29 @@ export default class Spectrogram extends React.Component {
     return false;
   };
 
+  drawBuffer = () => {
+    const nominalWidth = Math.round(
+      this.wavesurfer.getDuration() * this.wavesurfer.params.minPxPerSec * this.wavesurfer.params.pixelRatio,
+    );
+    const parentWidth = this.wavesurfer.drawer.getWidth();
+    let width = nominalWidth;
+    // always start at 0 after zooming for scrolling : issue redraw left part
+    let start = 0;
+    let end = Math.max(start + parentWidth, width);
+    // Fill container
+    if (this.wavesurfer.params.fillParent && (!this.wavesurfer.params.scrollParent || nominalWidth < parentWidth)) {
+      width = parentWidth;
+      start = 0;
+      end = width;
+    }
+
+    let peaks;
+    peaks = this.wavesurfer.backend.getPeaks(width, start, end);
+    this.wavesurfer.drawer.drawPeaks(peaks, width, this.wavesurfer.backend.buffer, start, end);
+
+    this.wavesurfer.fireEvent("redraw", peaks, width);
+  };
+
   componentDidMount() {
     this.$el = ReactDOM.findDOMNode(this);
 
@@ -366,8 +389,13 @@ export default class Spectrogram extends React.Component {
       };
     }
 
-    this.wavesurfer.on("ready", () => {
+    this.wavesurfer.on("waveform-ready", () => {
       self.props.onCreate(this.wavesurfer);
+
+      // set zoom to comfortable level for annotation (i.e. ~10 seconds)
+      this.onChangeZoom(Number(this.wavesurfer.getDuration()));
+
+      this.drawBuffer();
 
       this.wavesurfer.container.onwheel = throttle(this.onWheel, 100);
     });
