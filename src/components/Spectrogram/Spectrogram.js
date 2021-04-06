@@ -6,8 +6,7 @@ import { ZoomInOutlined, ZoomOutOutlined } from "@ant-design/icons";
 import RegionsPlugin from "wavesurfer.js/dist/plugin/wavesurfer.regions.min.js";
 import TimelinePlugin from "wavesurfer.js/dist/plugin/wavesurfer.timeline.min.js";
 // import SpectrogramPlugin from "wavesurfer.js/dist/plugin/wavesurfer.spectrogram.min.js";
-// import WaveSurfer from "wavesurfer.js";
-import WaveSurferExtended from "./wavesurfer.extended.js";
+import WaveSurfer from "wavesurfer.js";
 import styles from "./Spectrogram.module.scss";
 import globalStyles from "../../styles/global.module.scss";
 import { Slider, Row, Col, Select } from "antd";
@@ -17,7 +16,7 @@ import messages from "../../utils/messages";
 import { Hotkey } from "../../core/Hotkey";
 // import MultiCanvas from "wavesurfer.js/src/drawer.multicanvas.js";
 // import Canvas from "wavesurfer.js/src/drawer.js";
-import MySpectrogramRenderer from "./drawer.myspectrogramrenderer.js";
+import MySpectrogramRenderer from "./drawer.spectrocanvas.js";
 
 /**
  * Use formatTimeCallback to style the notch labels as you wish, such
@@ -255,7 +254,7 @@ export default class Spectrogram extends React.Component {
     peaks = this.wavesurfer.backend.getPeaks(width, start, end);
     this.wavesurfer.drawer.drawPeaks(peaks, width, this.wavesurfer.backend.buffer, start, end);
 
-    this.wavesurfer.fireEvent("redraw", peaks, width);
+    // this.wavesurfer.fireEvent("redraw", peaks, width);
   };
 
   componentDidMount() {
@@ -267,6 +266,7 @@ export default class Spectrogram extends React.Component {
       container: this.$waveform,
       renderer: MySpectrogramRenderer,
       waveColor: this.state.colors.waveColor,
+      fftSamples: 256,
       height: this.props.height,
       backend: "MediaElement",
       progressColor: this.state.colors.progressColor,
@@ -303,7 +303,7 @@ export default class Spectrogram extends React.Component {
       };
     }
 
-    this.wavesurfer = WaveSurferExtended.create(wavesurferConfigure);
+    this.wavesurfer = WaveSurfer.create(wavesurferConfigure);
 
     this.wavesurfer.on("error", e => {
       const error = String(e.message || e || "");
