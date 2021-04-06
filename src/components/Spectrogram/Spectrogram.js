@@ -168,6 +168,7 @@ export default class Spectrogram extends React.Component {
     });
 
     this.wavesurfer.zoom(value);
+    this.drawBuffer();
   };
 
   onChangeVolume = value => {
@@ -394,8 +395,6 @@ export default class Spectrogram extends React.Component {
 
       // set zoom to comfortable level for annotation (i.e. ~10 seconds)
       this.onChangeZoom(Number(this.wavesurfer.getDuration()));
-
-      this.drawBuffer();
 
       this.wavesurfer.container.onwheel = throttle(this.onWheel, 100);
     });

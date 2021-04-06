@@ -8,12 +8,7 @@ export default class MySpectrogramRenderer extends Drawer {
     super(container, params);
     // ... custom instantiation stuff goes here
     // (you can overwrite properties etc.)
-    this.colorMap = [];
-
-    for (let i = 0; i < 256; i++) {
-      var val = (255 - i) / 256;
-      this.colorMap.push([val, val, val, 1]);
-    }
+    // this.params.colorMap = [];
   }
 
   createElements() {
@@ -59,7 +54,8 @@ export default class MySpectrogramRenderer extends Drawer {
       return "rgb(" + rgb[0] + "," + rgb[1] + "," + rgb[2] + ")";
     } else {
       // If not just use gray scale
-      return "rgb(" + colorValue + "," + colorValue + "," + colorValue + ")";
+      let iColorValue = 255 - colorValue;
+      return "rgb(" + iColorValue + "," + iColorValue + "," + iColorValue + ")";
     }
   }
 
@@ -150,8 +146,8 @@ export default class MySpectrogramRenderer extends Drawer {
     this.resetScroll();
     this.setWidth(length);
     // var visualization = this.params.visualization;
-    var visualization = "spectrogram";
-    if (visualization === "spectrogram" && buffer) {
+    // var visualization = "spectrogram";
+    if (buffer) {
       this.drawSpectrogram(buffer);
     } else {
       // this.params.barWidth ?

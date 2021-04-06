@@ -121,15 +121,6 @@ export default class Drawer extends util.Observer {
     });
   }
 
-  // drawPeaks(peaks, length) {
-  //     this.resetScroll();
-  //     this.setWidth(length);
-
-  //     this.params.barWidth ?
-  //         this.drawBars(peaks) :
-  //         this.drawWave(peaks);
-  // }
-
   style(el, styles) {
     Object.keys(styles).forEach(function(prop) {
       if (el.style[prop] !== styles[prop]) {
