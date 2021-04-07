@@ -4,11 +4,7 @@ import Drawer from "./drawer.spectro.js";
 
 export default class MySpectrogramRenderer extends Drawer {
   constructor(container, params) {
-    // call the constructor of MultiCanvas:
     super(container, params);
-    // ... custom instantiation stuff goes here
-    // (you can overwrite properties etc.)
-    // this.params.colorMap = [];
   }
 
   createElements() {
@@ -40,7 +36,7 @@ export default class MySpectrogramRenderer extends Drawer {
       }),
     );
 
-    if (this.params.waveColor != this.params.progressColor) {
+    if (this.params.waveColor !== this.params.progressColor) {
       var progressCanvas = this.progressWave.appendChild(document.createElement("canvas"));
       this.progressCc = progressCanvas.getContext("2d");
     }
@@ -62,7 +58,7 @@ export default class MySpectrogramRenderer extends Drawer {
   getFrequencies(buffer) {
     var fftSamples = this.params.fftSamples || 512;
     var channelOne = Array.prototype.slice.call(buffer.getChannelData(0));
-    var bufferLength = buffer.length;
+    // var bufferLength = buffer.length;
     var sampleRate = buffer.sampleRate;
     var frequencies = [];
 
@@ -79,7 +75,7 @@ export default class MySpectrogramRenderer extends Drawer {
 
     var fft = new FFT(fftSamples, sampleRate);
 
-    var maxSlicesCount = Math.floor(bufferLength / (fftSamples - noverlap));
+    // var maxSlicesCount = Math.floor(bufferLength / (fftSamples - noverlap));
 
     var currentOffset = 0;
 
@@ -132,7 +128,7 @@ export default class MySpectrogramRenderer extends Drawer {
 
       var intColumn = new Uint8Array(oldMatrix[0].length);
 
-      for (var k = 0; k < oldMatrix[0].length; k++) {
+      for (let k = 0; k < oldMatrix[0].length; k++) {
         intColumn[k] = column[k];
       }
 
@@ -158,8 +154,9 @@ export default class MySpectrogramRenderer extends Drawer {
 
   drawSpectrogram(buffer) {
     var pixelRatio = this.params.pixelRatio;
-    var length = buffer.duration;
-    var height = (this.params.fftSamples / 2) * pixelRatio;
+    // var length = buffer.duration;
+    // var height = (this.params.fftSamples) * pixelRatio;
+    var height = this.params.height;
     var frequenciesData = this.getFrequencies(buffer);
 
     var pixels = this.resample(frequenciesData);
@@ -225,7 +222,7 @@ export default class MySpectrogramRenderer extends Drawer {
     });
     if (hasMinVals) {
       peaks = [].filter.call(peaks, function(_, index) {
-        return index % 2 == 0;
+        return index % 2 === 0;
       });
     }
 
@@ -304,7 +301,7 @@ export default class MySpectrogramRenderer extends Drawer {
     var length = ~~(peaks.length / 2);
 
     var scale = 1;
-    if (this.params.fillParent && this.width != length) {
+    if (this.params.fillParent && this.width !== length) {
       scale = this.width / length;
     }
 
@@ -328,15 +325,15 @@ export default class MySpectrogramRenderer extends Drawer {
       cc.beginPath();
       cc.moveTo($, halfH + offsetY);
 
-      for (var i = 0; i < length; i++) {
-        var h = Math.round((peaks[2 * i] / absmax) * halfH);
+      for (let i = 0; i < length; i++) {
+        let h = Math.round((peaks[2 * i] / absmax) * halfH);
         cc.lineTo(i * scale + $, halfH - h + offsetY);
       }
 
       // Draw the bottom edge going backwards, to make a single
       // closed hull to fill.
-      for (var i = length - 1; i >= 0; i--) {
-        var h = Math.round((peaks[2 * i + 1] / absmax) * halfH);
+      for (let i = length - 1; i >= 0; i--) {
+        let h = Math.round((peaks[2 * i + 1] / absmax) * halfH);
         cc.lineTo(i * scale + $, halfH - h + offsetY);
       }
 
@@ -364,18 +361,16 @@ function FFT(bufferSize, sampleRate) {
   this.reverseTable = new Uint32Array(bufferSize);
   this.peakBand = 0;
   this.peak = 0;
-  var i;
 
-  for (i = 0; i < bufferSize; i++) {
+  for (let i = 0; i < bufferSize; i++) {
     this.windowValues[i] = 0.5 * (1 - Math.cos((Math.PI * 2 * i) / (bufferSize - 1)));
   }
 
   var limit = 1;
   var bit = bufferSize >> 1;
-  var i;
 
   while (limit < bufferSize) {
-    for (i = 0; i < limit; i++) {
+    for (let i = 0; i < limit; i++) {
       this.reverseTable[i + limit] = this.reverseTable[i] + bit;
     }
 
@@ -383,7 +378,7 @@ function FFT(bufferSize, sampleRate) {
     bit = bit >> 1;
   }
 
-  for (i = 0; i < bufferSize; i++) {
+  for (let i = 0; i < bufferSize; i++) {
     this.sinTable[i] = Math.sin(-Math.PI / i);
     this.cosTable[i] = Math.cos(-Math.PI / i);
   }
@@ -437,7 +432,7 @@ function FFT(bufferSize, sampleRate) {
       currentPhaseShiftImag = 0;
 
       for (var fftStep = 0; fftStep < halfSize; fftStep++) {
-        var i = fftStep;
+        let i = fftStep;
 
         while (i < bufferSize) {
           off = i + halfSize;
@@ -458,7 +453,7 @@ function FFT(bufferSize, sampleRate) {
       halfSize = halfSize << 1;
     }
 
-    for (var i = 0, N = bufferSize / 2; i < N; i++) {
+    for (let i = 0, N = bufferSize / 2; i < N; i++) {
       rval = real[i];
       ival = imag[i];
       mag = bSi * sqrt(rval * rval + ival * ival);

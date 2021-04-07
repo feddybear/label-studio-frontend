@@ -162,6 +162,7 @@ export default class Spectrogram extends React.Component {
    * Handle to change zoom of wave
    */
   onChangeZoom = value => {
+    this.wavesurfer.pause();
     this.setState({
       ...this.state,
       zoom: value,
@@ -169,6 +170,7 @@ export default class Spectrogram extends React.Component {
 
     this.wavesurfer.zoom(value);
     this.drawBuffer();
+    this.wavesurfer.seekAndCenter(this.wavesurfer.getCurrentTime() / this.wavesurfer.getDuration());
   };
 
   onChangeVolume = value => {
@@ -195,7 +197,7 @@ export default class Spectrogram extends React.Component {
   onZoomPlus = (ev, step = 10) => {
     let val = this.state.zoom;
     val = val + step;
-    if (val > 700) val = 700;
+    if (val > 300) val = 300;
 
     this.onChangeZoom(val);
     ev && ev.preventDefault();
@@ -267,7 +269,7 @@ export default class Spectrogram extends React.Component {
       container: this.$waveform,
       renderer: MySpectrogramRenderer,
       waveColor: this.state.colors.waveColor,
-      fftSamples: 256,
+      fftSamples: 512,
       height: this.props.height,
       backend: "MediaElement",
       progressColor: this.state.colors.progressColor,
@@ -442,7 +444,7 @@ export default class Spectrogram extends React.Component {
                   <Slider
                     min={0}
                     step={10}
-                    max={500}
+                    max={300}
                     value={typeof this.state.zoom === "number" ? this.state.zoom : 0}
                     onChange={value => {
                       this.onChangeZoom(value);

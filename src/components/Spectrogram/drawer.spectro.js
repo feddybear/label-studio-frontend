@@ -102,7 +102,7 @@ export default class Drawer extends util.Observer {
 
     this.wrapper.addEventListener("click", function(e) {
       var scrollbarHeight = my.wrapper.offsetHeight - my.wrapper.clientHeight;
-      if (scrollbarHeight != 0) {
+      if (scrollbarHeight !== 0) {
         // scrollbar is visible.  Check if click was on it
         var bbox = my.wrapper.getBoundingClientRect();
         if (e.clientY >= bbox.bottom - scrollbarHeight) {
@@ -148,7 +148,7 @@ export default class Drawer extends util.Observer {
     var offset = target - scrollLeft;
     var maxScroll = this.wrapper.scrollWidth - this.wrapper.clientWidth;
 
-    if (maxScroll == 0) {
+    if (maxScroll === 0) {
       // no need to continue if scrollbar is not there
       return;
     }
@@ -164,7 +164,7 @@ export default class Drawer extends util.Observer {
     // limit target to valid range (0 to maxScroll)
     target = Math.max(0, Math.min(maxScroll, target));
     // no use attempting to scroll if we're not moving
-    if (target != scrollLeft) {
+    if (target !== scrollLeft) {
       this.wrapper.scrollLeft = target;
     }
   }
@@ -174,7 +174,7 @@ export default class Drawer extends util.Observer {
   }
 
   setWidth(width) {
-    if (width == this.width) {
+    if (width === this.width) {
       return;
     }
 
@@ -194,7 +194,7 @@ export default class Drawer extends util.Observer {
   }
 
   setHeight(height) {
-    if (height == this.height) {
+    if (height === this.height) {
       return;
     }
     this.height = height;
