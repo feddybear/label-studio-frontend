@@ -1,5 +1,5 @@
 import CursorPlugin from "wavesurfer.js/dist/plugin/wavesurfer.cursor";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
 import throttle from "lodash.throttle";
 import { ZoomInOutlined, ZoomOutOutlined } from "@ant-design/icons";
@@ -139,12 +139,27 @@ function secondaryLabelInterval(pxPerSec) {
   return Math.floor(10 / timeInterval(pxPerSec));
 }
 
+function UpdateLoadingFlag(Percentage) {
+  if (document.getElementById("loading_flag")) {
+    document.getElementById("loading_flag").innerText = "Loading " + Percentage + "%";
+    if (Percentage >= 100) {
+      document.getElementById("loading_flag").style.display = "none";
+    } else {
+      document.getElementById("loading_flag").style.display = "block";
+    }
+  }
+}
+
 export default class Spectrogram extends React.Component {
   constructor(props) {
     super(props);
 
     this.hotkeys = Hotkey();
-
+    AudioContext = window.AudioContext || window.webkitAudioContext;
+    this.audioCtx = new AudioContext({
+      latencyHint: "playback",
+      sampleRate: 16000,
+    });
     this.state = {
       src: this.props.src,
       pos: 0,
@@ -266,6 +281,7 @@ export default class Spectrogram extends React.Component {
     this.$waveform = this.$el.querySelector("#spec");
 
     let wavesurferConfigure = {
+      audioContext: this.audioCtx,
       container: this.$waveform,
       renderer: MySpectrogramRenderer,
       waveColor: this.state.colors.waveColor,
@@ -335,6 +351,11 @@ export default class Spectrogram extends React.Component {
      * Load data
      */
     this.wavesurfer.load(this.props.src);
+
+    // show progress while loading sound
+    this.wavesurfer.on("loading", function(X, evt) {
+      UpdateLoadingFlag(X);
+    });
 
     /**
      * Speed of playback
@@ -429,6 +450,7 @@ export default class Spectrogram extends React.Component {
 
     return (
       <div>
+        <div id="loading_flag"></div>
         <div id="spec" className={styles.wave} />
 
         <div id="timeline" />
